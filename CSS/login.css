@@ -11,7 +11,8 @@ body{
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;    
+    align-items: center;  
+    background-image: url(Fondo.png );
 }
 
 .container{
@@ -23,7 +24,6 @@ body{
 } 
 
 .container-form{
-border: 2px solid green;
 width: 100%;
 overflow: hidden;
 }
@@ -138,7 +138,7 @@ overflow: hidden;
 .container.toggle .container-welcome{
     transform: translateX(0);
     border-radius: 0 50% 50% 0;
-    background-color: #0fad88;
+    background-color: #038667;
 }
 
 .container-welcome .welcome{
@@ -176,7 +176,7 @@ border: 2px solid white;
 }
 
 .container.toggle .Welcome-Sign-up {
-    transform: translateX(-100%);
+    transform: translateX(-100);
 }
 
 

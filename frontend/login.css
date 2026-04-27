@@ -169,8 +169,8 @@ border: 2px solid white;
     transform: translateX(0);
 }
 
-.container.toggle .Welcome-Sign-up{
-    transform: translateX(100%);
+.container.toggle .Welcome-Sign-up {
+    transform: translateX(-100);
 }
 
 

@@ -6,13 +6,13 @@ btnSignin.addEventListener("click", () => {
   container.classList.remove("toggle");
 });
 
+
 btnSignup.addEventListener("click", () => {
   container.classList.add("toggle");
 });
 
 
-
-
+   
 
 
 

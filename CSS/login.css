@@ -4,6 +4,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
+    
 }
 
 body{
@@ -99,9 +100,22 @@ overflow: hidden;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
-    background-color: #3ab397;
+     background-color: #0c0ead;
     color: white;
 }
+
+.button-2{
+    width: 170px;
+    height: 45px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+     background-color: #bd0505;
+    color: white;
+}
+
 
 
 /*animacion de los formularios*/
@@ -123,7 +137,7 @@ overflow: hidden;
 /*Bienvenido*/
 
 .container-welcome{
-   background-color: #3ab397;
+   background-color: #0c0ead;
    position: absolute;
    width: 50%;
    height: 100%;
@@ -138,7 +152,7 @@ overflow: hidden;
 .container.toggle .container-welcome{
     transform: translateX(0);
     border-radius: 0 50% 50% 0;
-    background-color: #038667;
+    background-color: #bd0505;
 }
 
 .container-welcome .welcome{
@@ -176,7 +190,7 @@ border: 2px solid white;
 }
 
 .container.toggle .Welcome-Sign-up {
-    transform: translateX(-100);
+    transform: translateX(-100%);
 }
 
 

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmacia GBC — Tu salud, nuestra prioridad</title>
+  <meta name="description"
+    content="Farmacia GBC: medicamentos, ofertas y atención profesional. Más de 25 años cuidando tu salud con sucursales en toda la ciudad." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,700;1,800&family=Poppins:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/CSS/Inicio.css">
+  <link rel="stylesheet" href="/CSS/nosotros.css">
+  <link rel="stylesheet" href="/CSS/contacto.css">
+</head>
+
+<body>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="logo">
+        <div class="logo-icon">+</div>
+        <div class="logo-text"><strong>GBC</strong><small>Farmacia</small></div>
+      </a>
+      {{> nav activeInicio=true}}
+     <div class="nav-actions">
+
+  {{#if loggedIn}}
+  <div class="user-menu">
+    <button class="user-btn" onclick="toggleUserMenu()" id="user-menu-btn">
+      <span class="user-avatar">{{usuario.nombre.[0]}}</span>
+      <span class="user-name">{{usuario.nombre}}</span>
+    </button>
+
+    <div class="user-dropdown" id="user-dropdown">
+      <div class="dropdown-header">
+        <strong>{{usuario.nombre}}</strong>
+        <small>{{usuario.correo}}</small>
+      </div>
+
+      <div class="dropdown-divider"></div>
+
+      <a href="/logout" class="dropdown-item">
+        🚪 Cerrar sesión
+      </a>
+    </div>
+  </div>
+  {{else}}
+  <a href="/login" class="btn btn-hero btn-sm" id="cta-login">
+    Iniciar sesión
+  </a>
+  {{/if}}
+
+  <!-- carrito -->
+  <button class="cart-btn" onclick="openDrawer()" aria-label="Abrir carrito">
+    🛒<span class="cart-badge"></span>
+  </button>
+
+  <button class="menu-btn" onclick="toggleMenu()" aria-label="Menú">
+    ☰
+  </button>
+
+</div>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="container">
+        {{> nav-mobile}}
+        {{#if loggedIn}}
+        <a href="/logout" class="btn btn-outline">🚪 Cerrar sesión</a>
+        {{else}}
+        <a href="/login" class="btn btn-hero">Iniciar sesión</a>
+        {{/if}}
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="inicio" class="hero">
+      <div class="container hero-grid">
+        <div class="fade-up">
+          <span class="tag tag-accent"><span class="dot"></span> Abierto 24/7</span>
+          <h1>Tu salud,<br />nuestra <span class="text-accent">prioridad</span>.</h1>
+          <p class="lead">En Farmacia GBC encontrarás los mejores medicamentos, productos de cuidado personal y atención
+            profesional cerca de ti.</p>
+          <div class="hero-cta">
+            <a href="#ofertas" class="btn btn-hero btn-lg">Ver Ofertas</a>
+            <a href="/sucursales" class="btn btn-outline btn-lg">Encuentra una sucursal</a>
+          </div>
+          <div class="hero-features">
+            <div class="f">
+              <div class="icon-box">🚚</div><span>Envío rápido</span>
+            </div>
+            <div class="f">
+              <div class="icon-box">🛡️</div><span>100% original</span>
+            </div>
+            <div class="f">
+              <div class="icon-box">⏰</div><span>Atención 24h</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-img-wrap">
+          <div class="bg-tilt"></div>
+          <div class="hero-img">💊</div>
+          <div class="hero-badge">
+            <div class="circle">🛡️</div>
+            <div><strong>+25</strong><small>años cuidándote</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ofertas">
+      <div class="container">
+        <div class="section-head">
+          <span class="tag tag-accent">🏷️ Ofertas de la semana</span>
+          <h2>Promociones imperdibles</h2>
+          <p>Ahorra en tus productos favoritos con descuentos especiales solo en GBC.</p>
+        </div>
+        <div class="grid grid-3" id="ofertas-grid">
+          {{#each ofertas}}
+          <article class="card">
+            <div class="card-header">
+              <span class="cat-pill muted">{{this.categoria}}</span>
+              {{#if this.descuento}}
+              <span class="discount-pill">{{this.descuento}}</span>
+              {{/if}}
+            </div>
+            <div class="offer-img">
+              <img src="{{this.imagen}}" alt="{{this.nombre}}" loading="lazy" width="320" height="320" onerror="this.onerror=null;this.src='/IMG/categorias/default.svg'">
+            </div>
+            <h3>{{this.nombre}}</h3>
+            <p class="desc">{{this.descripcion}}</p>
+            <div class="row">
+              <div>
+                <span class="price price-accent">${{this.precio}}</span>
+                {{#if this.precio_anterior}}
+                <span class="price-old">${{this.precio_anterior}}</span>
+                {{/if}}
+              </div>
+              <button class="btn btn-primary btn-sm"
+                onclick="addToCart('{{this.nombre}}', {{this.precio}})">Comprar</button>
+            </div>
+          </article>
+          {{/each}}
+        </div>
+      </div>
+    </section>
+
+
+    <section id="categorias">
+      <div class="container">
+        <div class="section-head">
+          <span class="tag tag-primary">🛍️ Nuestro catálogo</span>
+          <h2>Categorías</h2>
+          <p>Explora nuestra amplia variedad de productos farmacéuticos y de cuidado personal
+            organizados por categorías.</p>
+        </div>
+        <div class="grid grid-3">
+          <article class="card">
+            <div class="icon-circle">💊</div>
+            <h3>Medicamentos</h3>
+            <p class="desc">Medicina general y de prescripción</p>
+            <div class="row"><span class="cat-pill">+1200 PRODUCTOS</span><a href="/productos?categoria=Medicamentos"
+                class="text-accent link-more">Ver más →</a></div>
+          </article>
+          <article class="card">
+            <div class="icon-circle">❤️</div>
+            <h3>Cuidado Cardiovascular</h3>
+            <p class="desc">Para el cuidado de tu corazón</p>
+            <div class="row"><span class="cat-pill">+150 PRODUCTOS</span><a href="/productos?categoria=Cardiovascular"
+                class="text-accent link-more">Ver más →</a></div>
+          </article>
+          <article class="card">
+            <div class="icon-circle">👶</div>
+            <h3>Bebés y Niños</h3>
+            <p class="desc">Productos especializados para los más pequeños</p>
+            <div class="row"><span class="cat-pill">+300 PRODUCTOS</span><a href="/productos?categoria=Bebés"
+                class="text-accent link-more">Ver más →</a></div>
+          </article>
+          <article class="card">
+            <div class="icon-circle">✨</div>
+            <h3>Dermocosmética</h3>
+            <p class="desc">Cuidado facial y corporal</p>
+            <div class="row"><span class="cat-pill">+450 PRODUCTOS</span><a href="/productos?categoria=Dermocosmética"
+                class="text-accent link-more">Ver más →</a></div>
+          </article>
+          <article class="card">
+            <div class="icon-circle">🧴</div>
+            <h3>Cuidado Personal</h3>
+            <p class="desc">Higiene y bienestar diario</p>
+            <div class="row"><span class="cat-pill">+200 PRODUCTOS</span><a href="/productos?categoria=Cuidado+Personal"
+                class="text-accent link-more">Ver más →</a></div>
+          </article>
+          <article class="card">
+            <div class="icon-circle">🌿</div>
+            <h3>Naturales y Vitaminas</h3>
+            <p class="desc">Suplementos y productos naturales</p>
+            <div class="row"><span class="cat-pill">+380 PRODUCTOS</span><a href="/productos?categoria=Vitaminas"
+                class="text-accent link-more">Ver más →</a></div>
+          </article>
+        </div>
+        <div class="center-action">
+          <a href="/productos" class="btn btn-hero btn-lg">Ver catálogo completo →</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="nosotros" class="section-soft">
+      <div class="container">
+        <div class="about-grid">
+          <div>
+            <span class="tag tag-accent">Sobre GBC</span>
+            <h2 class="section-title-large">Más que una farmacia,<br /><span class="text-accent">somos tu aliado en
+                salud</span>.</h2>
+            <p class="section-subtitle-large">Desde 2000, Farmacia GBC ha estado al servicio de las familias mexicanas,
+              ofreciendo medicamentos de calidad, asesoría profesional y un servicio cálido. Nuestra misión es hacer la
+              salud accesible para todos.</p>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <p class="num">25+</p><small>Años de experiencia</small>
+            </div>
+            <div class="stat">
+              <p class="num">50K+</p><small>Clientes felices</small>
+            </div>
+            <div class="stat">
+              <p class="num">12</p><small>Sucursales activas</small>
+            </div>
+            <div class="stat">
+              <p class="num">10K+</p><small>Productos disponibles</small>
+            </div>
+          </div>
+        </div>
+        <div class="values">
+          <div class="value">
+            <div class="icon-circle">❤️</div>
+            <h3>Compromiso</h3>
+            <p class="desc">Cuidamos tu salud como si fuera la nuestra.</p>
+          </div>
+          <div class="value">
+            <div class="icon-circle">🏆</div>
+            <h3>Calidad</h3>
+            <p class="desc">Solo medicamentos certificados y de marcas confiables.</p>
+          </div>
+          <div class="value">
+            <div class="icon-circle">👥</div>
+            <h3>Cercanía</h3>
+            <p class="desc">Atención personalizada por farmacéuticos expertos.</p>
+          </div>
+          <div class="value">
+            <div class="icon-circle">✨</div>
+            <h3>Innovación</h3>
+            <p class="desc">Tecnología y servicio digital para tu comodidad.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto" class="section-soft">
+      <div class="container contact-grid">
+        <div>
+          <span class="tag tag-accent">Contáctanos</span>
+          <h2 class="section-title-large">Estamos aquí<br /><span class="text-accent">ayudarte</span>.</h2>
+          <p class="section-subtitle-medium">¿Tienes alguna duda sobre un producto o quieres hacer un pedido? Escríbenos
+            y nuestro equipo te responderá rápido.</p>
+          <div class="contact-info">
+            <div class="item">
+              <div class="icon-box">📞</div>
+              <div><small>Llámanos</small>
+                <p>(55) 1234-5678</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="icon-box">✉️</div>
+              <div><small>Escríbenos</small>
+                <p>contacto@farmaciagbc.com</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="icon-box">📍</div>
+              <div><small>Oficinas centrales</small>
+                <p>Av. Juárez 245, CDMX</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <form class="form" id="contact-form" action="/contacto" method="POST">
+          <div class="row">
+            <div><label for="name">Nombre</label><input id="name" name="name" required placeholder="Tu nombre" /></div>
+            <div><label for="phone">Teléfono</label><input id="phone" name="phone" type="tel"
+                placeholder="(55) 0000 0000" /></div>
+          </div>
+          <div><label for="email">Correo</label><input id="email" name="email" type="email" required
+              placeholder="tu@correo.com" /></div>
+          <div><label for="msg">Mensaje</label><textarea id="msg" name="msg" required rows="5"
+              placeholder="¿En qué podemos ayudarte?"></textarea></div>
+          <button type="submit" class="btn btn-hero btn-lg btn-block">Enviar mensaje ➤</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  {{> footer}}
+
+  <!-- CART DRAWER -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer" aria-label="Carrito">
+    <div class="drawer-head">
+      <h3>🛒 Tu carrito (<span id="drawer-count">0</span>)</h3>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-foot hidden" id="drawer-foot">
+      <div class="total-row"><span>Total</span><span id="drawer-total">$0</span></div>
+      <button class="btn btn-hero btn-block" onclick="checkout()">Confirmar pedido ➤</button>
+      <button class="btn btn-outline btn-block mt-8" onclick="clearCart()">Vaciar carrito</button>
+    </div>
+  </aside>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="/JS/Inicio.js"></script>
+</body>
+
+</html>

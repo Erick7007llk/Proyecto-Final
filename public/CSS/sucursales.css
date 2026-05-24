@@ -1,0 +1,29 @@
+/* ============ SUCURSALES ============ */
+
+#sucursales-grid {
+  margin-top: 40px;
+}
+
+.sucursal-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sucursal-card h3 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.sucursal-card .info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.sucursal-card .info i {
+  margin-top: 2px;
+}

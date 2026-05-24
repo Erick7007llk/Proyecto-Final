@@ -1,0 +1,20 @@
+{
+  "name": "farmacia-gbc",
+  "version": "1.0.0",
+  "main": "index.JS",
+  "scripts": {
+    "start": "node index.JS",
+    "imagenes": "node scripts/create-imagenes-categorias.js",
+    "catalogo": "node scripts/create-imagenes-categorias.js && node scripts/generate-productos.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "bootstrap": "^5.3.8",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-handlebars": "^8.0.2",
+    "express-session": "^1.19.0",
+    "handlebars": "^4.7.9",
+    "mysql2": "^3.22.3"
+  }
+}

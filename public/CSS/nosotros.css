@@ -1,0 +1,78 @@
+/* ============ ABOUT / NOSOTROS ============ */
+
+.about-grid {
+  display: grid;
+  gap: 48px;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px 18px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition);
+}
+
+.stat:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-elegant);
+}
+
+.stat .num {
+  font-family: 'Poppins', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  background: var(--grad-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.values {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  margin-top: 60px;
+}
+
+@media (min-width: 768px) {
+  .values {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.value {
+  text-align: center;
+  padding: 28px 18px;
+  border-radius: 18px;
+  transition: var(--transition);
+}
+
+.value:hover {
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+
+.value .icon-circle {
+  margin: 0 auto 16px;
+}

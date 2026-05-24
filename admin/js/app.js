@@ -37,7 +37,17 @@
     renderCurrentModule();
   });
 
+  function resolveInitialModule() {
+    const params = new URLSearchParams(window.location.search);
+    const fromQuery = params.get('module');
+    if (fromQuery && GBCModules.MODULES[fromQuery]) return fromQuery;
+    const hash = window.location.hash.replace(/^#/, '').trim();
+    if (hash && GBCModules.MODULES[hash]) return hash;
+    return 'proveedores';
+  }
+
   function switchModule(id) {
+    if (!GBCModules.MODULES[id]) return;
     currentModule = id;
     editingId = null;
     docEditingId = null;
@@ -51,6 +61,9 @@
     const mod = GBCModules.MODULES[id];
     pageTitle.textContent = mod.title;
     pageSubtitle.textContent = mod.subtitle;
+    if (window.location.hash.replace(/^#/, '') !== id) {
+      window.location.hash = id;
+    }
     renderCurrentModule();
   }
 
@@ -502,5 +515,9 @@
     renderCurrentModule();
   }
 
-  switchModule('proveedores');
+  switchModule(resolveInitialModule());
+  window.addEventListener('hashchange', () => {
+    const id = window.location.hash.replace(/^#/, '').trim();
+    if (id && GBCModules.MODULES[id] && id !== currentModule) switchModule(id);
+  });
 })();

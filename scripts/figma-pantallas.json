@@ -1,0 +1,21 @@
+{
+  "fileKey": "JYjb7TDafThktgxe74R4ca",
+  "fileUrl": "https://www.figma.com/design/JYjb7TDafThktgxe74R4ca",
+  "planKey": "team::1548351678479389875",
+  "fileName": "Farmacia GBC — Pantallas",
+  "baseUrl": "http://localhost:5500",
+  "pantallas": [
+    { "id": "inicio", "nombre": "Inicio (completa)", "path": "/", "delay": 8000 },
+    { "id": "login", "nombre": "Login", "path": "/login", "delay": 3000 },
+    { "id": "registro", "nombre": "Registro", "path": "/login?register=1", "delay": 3000 },
+    { "id": "productos-todos", "nombre": "Productos — catálogo", "path": "/productos", "delay": 10000 },
+    { "id": "productos-categoria", "nombre": "Productos — filtro categoría", "path": "/productos?categoria=Beb%C3%A9s", "delay": 5000 },
+    { "id": "sucursales", "nombre": "Sucursales", "path": "/sucursales", "delay": 3000 },
+    { "id": "admin-proveedores", "nombre": "Admin — Proveedores", "path": "/admin/index.html?figma_capture=1&module=proveedores", "delay": 4000, "title": "Gestión de Proveedores" },
+    { "id": "admin-empleados", "nombre": "Admin — Empleados", "path": "/admin/index.html?figma_capture=1&module=empleados", "delay": 4000, "title": "Gestión de Empleados" },
+    { "id": "admin-productos", "nombre": "Admin — Productos", "path": "/admin/index.html?figma_capture=1&module=productos", "delay": 4000, "title": "Inventario de Productos" },
+    { "id": "admin-clientes", "nombre": "Admin — Clientes", "path": "/admin/index.html?figma_capture=1&module=clientes", "delay": 4000, "title": "Gestión de Clientes" },
+    { "id": "admin-facturacion", "nombre": "Admin — Facturación", "path": "/admin/index.html?figma_capture=1&module=facturacion", "delay": 5000, "title": "Facturación" },
+    { "id": "admin-compras", "nombre": "Admin — Compras", "path": "/admin/index.html?figma_capture=1&module=compras", "delay": 5000, "title": "Compras a Proveedor" }
+  ]
+}

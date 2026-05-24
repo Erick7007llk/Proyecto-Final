@@ -25,10 +25,19 @@
     { id: 3, codigo: 'C-003', nombre: 'Carlos', apellidos: 'Ruiz', seguro: 'Universal', sexo: 'M', telefono: '809-555-2003', estado: 'Inactivo' }
   ];
 
+  const productosInventario = [
+    { id: 1, nombre: 'Paracetamol 500 mg', tipo: 'Analgésico', precio: 45, cantidad: 120, lote: 'L20260401', vence: '2027-06-01', medicamento: 'Genérico', concentracion: '500 mg', presentacion: 'Tabletas' },
+    { id: 2, nombre: 'Ibuprofeno 400 mg', tipo: 'Antiinflamatorio', precio: 68, cantidad: 85, lote: 'L20260402', vence: '2027-08-15', medicamento: 'Comercial', concentracion: '400 mg', presentacion: 'Tabletas' },
+    { id: 3, nombre: 'Vitamina C 1000 mg', tipo: 'Vitamina', precio: 189, cantidad: 200, lote: 'L20260403', vence: '2028-01-20', medicamento: 'Genérico', concentracion: '1000 mg', presentacion: 'Efervescentes' },
+    { id: 4, nombre: 'Losartán 50 mg', tipo: 'Cardiovascular', precio: 150, cantidad: 60, lote: 'L20260404', vence: '2027-03-10', medicamento: 'Genérico', concentracion: '50 mg', presentacion: 'Tabletas' },
+    { id: 5, nombre: 'Pañales etapa 3', tipo: 'Bebés', precio: 210, cantidad: 45, lote: 'L20260405', vence: '2029-12-31', medicamento: 'Comercial', concentracion: '—', presentacion: 'Pack 32 u.' },
+    { id: 6, nombre: 'Alcohol gel 500 ml', tipo: 'Higiene', precio: 89, cantidad: 150, lote: 'L20260406', vence: '2028-06-30', medicamento: 'Comercial', concentracion: '70%', presentacion: 'Frasco' }
+  ];
+
   function init() {
     seedIfEmpty('proveedores', proveedores);
     seedIfEmpty('empleados', empleados);
-    seedIfEmpty('productos', []);
+    seedIfEmpty('productos', productosInventario);
     seedIfEmpty('clientes', clientes);
     seedIfEmpty('facturas', []);
     seedIfEmpty('compras', []);

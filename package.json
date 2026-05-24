@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node index.JS",
     "imagenes": "node scripts/create-imagenes-categorias.js",
-    "catalogo": "node scripts/create-imagenes-categorias.js && node scripts/generate-productos.js"
+    "catalogo": "node scripts/create-imagenes-categorias.js && node scripts/generate-productos.js",
+    "figma:manifest": "node -e \"console.log(require('./scripts/figma-pantallas.json').pantallas.map(p=>p.nombre).join('\\n'))\""
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

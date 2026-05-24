@@ -17,7 +17,21 @@
     };
   }
 
+  function isLocalFigmaCapture() {
+    const host = global.location.hostname;
+    return (host === 'localhost' || host === '127.0.0.1') &&
+      new URLSearchParams(global.location.search).get('figma_capture') === '1';
+  }
+
   async function requireAuth() {
+    if (isLocalFigmaCapture()) {
+      return {
+        nombre: 'Administrador',
+        correo: 'admin@gbc.com',
+        rol: 'admin',
+        iniciales: 'AD'
+      };
+    }
     try {
       const user = await fetchSession();
       if (!user) {

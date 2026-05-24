@@ -52,7 +52,15 @@ function isAdmin(req) {
     return req.session.usuario?.rol === 'admin';
 }
 
+/** Solo localhost: permite servir /admin para captura en Figma sin sesión */
+function isLocalFigmaCapture(req) {
+    const host = req.hostname || '';
+    const local = host === 'localhost' || host === '127.0.0.1';
+    return local && req.query.figma_capture === '1';
+}
+
 function requireAdmin(req, res, next) {
+    if (isLocalFigmaCapture(req)) return next();
     if (!isAdmin(req)) {
         return res.redirect('/login?error=Debes iniciar sesión con una cuenta de administrador');
     }
@@ -142,7 +150,10 @@ app.get('/api/auth/me', (req, res) => {
 
 app.get('/admin/login.html', (req, res) => res.redirect('/login'));
 app.get('/admin/login', (req, res) => res.redirect('/login'));
-app.get('/admin', requireAdmin, (req, res) => res.redirect('/admin/index.html'));
+app.get('/admin', requireAdmin, (req, res) => {
+    const q = isLocalFigmaCapture(req) ? '?figma_capture=1' : '';
+    res.redirect(`/admin/index.html${q}`);
+});
 app.get('/admin/index.html', requireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'admin', 'index.html'));
 });

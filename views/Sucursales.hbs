@@ -10,9 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/CSS/Inicio.css">
   <link rel="stylesheet" href="/CSS/sucursales.css">
-  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
-  <script src="/JS/figma-ready.js" defer></script>
-</head>
 <body>
 
 <header class="navbar">
@@ -65,9 +62,20 @@
       <div class="section-head">
         <span class="tag tag-primary">📍 Encuéntranos</span>
         <h2>Nuestras Sucursales</h2>
-        <p>Más de 12 sucursales para servirte mejor en toda la ciudad.</p>
+        <p>GBC cuenta con más de 160 sucursales en todo el país. Aquí encontrarás algunas de las más conocidas.</p>
+        <p class="section-sub" style="margin-top:12px">
+          <a href="https://farmaciamedicargbc.com/sucursales/" target="_blank" rel="noopener noreferrer">Ver listado completo en farmaciamedicargbc.com →</a>
+        </p>
       </div>
-      <div class="grid grid-4" id="sucursales-grid"></div>
+      <div class="grid grid-4" id="sucursales-grid">
+        {{#each sucursales}}
+        <div class="card sucursal-card">
+          <div class="icon-circle accent">📍</div>
+          <h3>{{this.nombre}}</h3>
+          <p class="desc">{{this.direccion}}</p>
+        </div>
+        {{/each}}
+      </div>
     </div>
   </section>
 </main>

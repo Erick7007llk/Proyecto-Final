@@ -301,18 +301,7 @@
 
   /* ========== DOCUMENT MODULES ========== */
 
-  const SAMPLE_ARTICLES = [
-    { codigo: '1', articulo: 'Acetaminofén', tipo: 'Analgésico', precio: 100, descuento: 25 },
-    { codigo: '2', articulo: 'Ibuprofeno', tipo: 'Antiinflamatorio', precio: 100, descuento: 30 },
-    { codigo: '3', articulo: 'Advil', tipo: 'Antiinflamatorio', precio: 100, descuento: 40 },
-    { codigo: '4', articulo: 'Amoxicilina', tipo: 'Antibiótico', precio: 100, descuento: 50 },
-    { codigo: '5', articulo: 'Omeprazol', tipo: 'Gastro', precio: 100, descuento: 60 },
-    { codigo: '6', articulo: 'Loratadina', tipo: 'Antialérgico', precio: 100, descuento: 70 },
-    { codigo: '7', articulo: 'Paracetamol', tipo: 'Analgésico', precio: 100, descuento: 80 },
-    { codigo: '8', articulo: 'Vitamina C', tipo: 'Vitamina', precio: 100, descuento: 90 },
-    { codigo: '9', articulo: 'Aspirina', tipo: 'Analgésico', precio: 100, descuento: 95 },
-    { codigo: '10', articulo: 'Metformina', tipo: 'Diabetes', precio: 100, descuento: 100 }
-  ];
+
 
   function calcLineTotal(precio, cantidad, descuento, itbis = 0.18) {
     const sub = precio * cantidad;
@@ -336,16 +325,7 @@
       ? proveedores.map((p) => `<option value="${p.id}">${p.nombre}</option>`).join('')
       : clientes.map((c) => `<option value="${c.id}">${c.nombre} ${c.apellidos || ''}</option>`).join('');
 
-    const lines = docLines.length ? docLines : SAMPLE_ARTICLES.map((a, i) => ({
-      ...a,
-      cantidad: isCompra ? 100 : 1,
-      lote: 'L20260415',
-      vence: '2027-04-15',
-      presentacion: isCompra ? 'Tabletas efervescentes' : undefined,
-      itbis: 18
-    }));
 
-    if (!docLines.length) docLines = lines;
 
     const totals = docLines.reduce((acc, l) => {
       const c = calcLineTotal(Number(l.precio), Number(l.cantidad || 1), Number(l.descuento || 0));

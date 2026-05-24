@@ -4,6 +4,16 @@
   margin-top: 40px;
 }
 
+.section-sub a {
+  color: var(--primary, #0d9488);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.section-sub a:hover {
+  text-decoration: underline;
+}
+
 .sucursal-card {
   padding: 24px;
   display: flex;

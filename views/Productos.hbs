@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Farmacia GBC</title>
+  <meta name="description" content="Catálogo completo de productos de Farmacia GBC. Medicamentos, vitaminas, dermocosmética y más." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/CSS/Inicio.css" />
+  <link rel="stylesheet" href="/CSS/productos.css" />
+  
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container nav-inner">
+    <a href="/" class="logo">
+      <div class="logo-icon">+</div>
+      <div class="logo-text"><strong>GBC</strong><small>Farmacia</small></div>
+    </a>
+    {{> nav activeProductos=true}}
+    <div class="nav-actions">
+      <button class="cart-btn" onclick="openDrawer()" aria-label="Abrir carrito">
+        🛒<span class="cart-badge"></span>
+      </button>
+      {{#if loggedIn}}
+        <div class="user-menu">
+          <button class="user-btn" onclick="toggleUserMenu()" id="user-menu-btn">
+            <span class="user-avatar">{{usuario.nombre.[0]}}</span>
+            <span class="user-name">{{usuario.nombre}}</span>
+          </button>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="dropdown-header">
+              <strong>{{usuario.nombre}}</strong>
+              <small>{{usuario.correo}}</small>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a href="/logout" class="dropdown-item">🚪 Cerrar sesión</a>
+          </div>
+        </div>
+      {{else}}
+        <a href="/login" class="btn btn-hero btn-sm">Iniciar sesión</a>
+      {{/if}}
+      <button class="menu-btn" onclick="toggleMenu()" aria-label="Menú">☰</button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="container">
+      {{> nav-mobile}}
+      {{#if loggedIn}}
+        <a href="/logout" class="btn btn-outline">🚪 Cerrar sesión</a>
+      {{else}}
+        <a href="/login" class="btn btn-hero">Iniciar sesión</a>
+      {{/if}}
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="productos-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/">Inicio</a> <span>/</span> <span>Productos</span>
+    </div>
+    <h1>Catálogo de <span class="text-accent">Productos</span></h1>
+    <p class="lead">Encuentra todo lo que necesitas para tu salud y bienestar.</p>
+  </div>
+</section>
+
+<section class="productos-section">
+  <div class="container">
+    <!-- Filtros de categoría -->
+    <div class="filtros">
+      <a href="/productos" class="filtro-btn {{#if (eq categoriaActual 'todos')}}active{{/if}}">
+        🏷️ Todos
+      </a>
+      {{#each categorias}}
+        <a href="/productos?categoria={{this.categoria}}" class="filtro-btn {{#if (eq ../categoriaActual this.categoria)}}active{{/if}}">
+          {{this.categoria}}
+        </a>
+      {{/each}}
+    </div>
+
+    <!-- Productos agrupados por categoría -->
+    {{#each grupos}}
+      <div class="categoria-group" id="cat-{{this.categoria}}">
+        <div class="categoria-header">
+          <div class="categoria-title">
+            <span class="categoria-icon">{{this.icono}}</span>
+            <h2>{{this.categoria}}</h2>
+            <span class="categoria-count">{{this.productos.length}} productos</span>
+          </div>
+          <div class="categoria-line"></div>
+        </div>
+        <div class="grid grid-products">
+          {{#each this.productos}}
+            <article class="card producto-card">
+              {{#if this.descuento}}
+                <span class="discount-pill">{{this.descuento}}</span>
+              {{/if}}
+              <div class="producto-img">
+                <div class="rx">Rx</div>
+              </div>
+              <div class="producto-cat">{{this.categoria}}</div>
+              <h3>{{this.nombre}}</h3>
+              <p class="desc">{{this.descripcion}}</p>
+              <div class="row">
+                <div>
+                  <span class="price price-accent">${{this.precio}}</span>
+                  {{#if this.precio_anterior}}
+                    <span class="price-old">${{this.precio_anterior}}</span>
+                  {{/if}}
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="addToCart('{{this.nombre}}', {{this.precio}})">
+                  Comprar
+                </button>
+              </div>
+            </article>
+          {{/each}}
+        </div>
+      </div>
+    {{/each}}
+
+    {{#unless productos.length}}
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No se encontraron productos</h3>
+        <p>No hay productos en esta categoría. Intenta con otra.</p>
+        <a href="/productos" class="btn btn-hero">Ver todos los productos</a>
+      </div>
+    {{/unless}}
+  </div>
+</section>
+
+</main>
+
+{{> footer}}
+
+<!-- CART DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer" aria-label="Carrito">
+  <div class="drawer-head">
+    <h3>🛒 Tu carrito (<span id="drawer-count">0</span>)</h3>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+  <div class="drawer-foot hidden" id="drawer-foot">
+    <div class="total-row"><span>Total</span><span id="drawer-total">$0</span></div>
+    <button class="btn btn-hero btn-block" onclick="checkout()">Confirmar pedido ➤</button>
+    <button class="btn btn-outline btn-block mt-8" onclick="clearCart()">Vaciar carrito</button>
+  </div>
+</aside>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/JS/Inicio.js"></script>
+</body>
+

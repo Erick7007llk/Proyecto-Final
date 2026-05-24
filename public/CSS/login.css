@@ -1,0 +1,330 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0d2752 0%, #1c4a8d 60%, #d92121 100%);
+}
+
+/* Back link */
+.back-link {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    z-index: 10;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(8px);
+    transition: all .3s ease;
+}
+
+.back-link:hover {
+    background: rgba(255,255,255,.3);
+    transform: translateX(-4px);
+}
+
+.container{
+    border: none;
+    border-radius: 16px;
+    width: 800px;
+    height: 500px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    background: #fff;
+}
+
+.container-form{
+    width: 100%;
+    overflow: hidden;
+}
+
+.container-form form{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.5s ease-in-out;
+}
+
+.container-form h2{
+    font-size: 28px;
+    margin-bottom: 16px;
+    color: #11305f;
+}
+
+.icon-networks{
+    font-size: 18px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.icon-networks ion-icon{
+    border: 1px solid #dde3ec;
+    font-size: 18px;
+    border-radius: 10px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all .3s ease;
+    color: #11305f;
+}
+
+.icon-networks ion-icon:hover {
+    background: #11305f;
+    color: #fff;
+    border-color: #11305f;
+}
+
+.container-form span{
+    font-size: 12px;
+    margin-bottom: 15px;
+    color: #5d6b82;
+}
+
+.container-input{
+    width: 300px;
+    height: 40px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 15px;
+    background-color: #f6f8fc;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all .3s ease;
+}
+
+.container-input:focus-within {
+    border-color: #11305f;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(17,48,95,.1);
+}
+
+.container-input ion-icon {
+    color: #5d6b82;
+    font-size: 18px;
+}
+
+.container-input input{
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    background-color: inherit;
+    font-size: 13px;
+}
+
+.container-form a{
+    color: #5d6b82;
+    font-size: 13px;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    transition: color .3s ease;
+}
+
+.container-form a:hover {
+    color: #d92121;
+}
+
+/* Alert messages */
+.alert {
+    width: 300px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    text-align: center;
+    animation: slideDown .3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.button{
+    width: 170px;
+    height: 45px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #11305f, #1c4a8d);
+    color: white;
+    transition: all .3s ease;
+    box-shadow: 0 4px 15px rgba(17,48,95,.3);
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17,48,95,.4);
+}
+
+.button-2{
+    width: 170px;
+    height: 45px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #d92121, #ee3838);
+    color: white;
+    transition: all .3s ease;
+    box-shadow: 0 4px 15px rgba(217,33,33,.3);
+}
+
+.button-2:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(217,33,33,.4);
+}
+
+/*animacion de los formularios*/
+.Sign-up{
+    transform: translateX(-100%);
+}
+
+.container.toggle .Sign-in{
+    transform: translateX(100%);
+}
+
+.container.toggle .Sign-up{
+    transform: translateX(0);
+}
+
+/*Bienvenido*/
+.container-welcome{
+   background: linear-gradient(135deg, #11305f, #1c4a8d);
+   position: absolute;
+   width: 50%;
+   height: 100%;
+   display: flex;
+   align-items: center;
+   transform: translateX(100%);
+   transition: transform 0.4s, border-radius 0.5s;
+   overflow: hidden;
+   border-radius: 50% 0 0 50%;
+}
+
+.container.toggle .container-welcome{
+    transform: translateX(0);
+    border-radius: 0 50% 50% 0;
+    background: linear-gradient(135deg, #d92121, #ee3838);
+}
+
+.container-welcome .welcome{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 0 50px;
+    color: white;
+    transition: transform 0.4s;
+}
+
+.Welcome-Sign-in{
+    transform: translateX(100%);
+}
+
+.container-welcome h3{
+    font-size: 36px;
+    font-weight: 700;
+}
+
+.container-welcome p{
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.container-welcome button{
+    border: 2px solid white;
+    border-radius: 8px;
+    padding: 10px 30px;
+    font-weight: 600;
+    transition: all .3s ease;
+}
+
+.container-welcome button:hover {
+    background: rgba(255,255,255,.2);
+}
+
+.container.toggle .Welcome-Sign-in{
+    transform: translateX(0);
+}
+
+.container.toggle .Welcome-Sign-up {
+    transform: translateX(-100%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+        height: auto;
+        min-height: 500px;
+        flex-direction: column;
+    }
+
+    .container-welcome {
+        display: none;
+    }
+
+    .container-form {
+        width: 100%;
+    }
+
+    .container-form form {
+        padding: 30px 20px;
+    }
+
+    .Sign-up {
+        transform: translateX(0);
+    }
+
+    .container-input {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .alert {
+        width: 100%;
+        max-width: 300px;
+    }
+}

@@ -1,20 +1,28 @@
 {
-  "dependencies": {
-    "bootstrap": "^5.3.8",
-    "express": "^5.2.1",
-    "express-handlebars": "^9.0.1",
-    "handlebars": "^4.7.9"
-  },
-  "name": "backend",
+  "name": "farmacia-gbc",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "devDependencies": {},
+  "description": "Farmacia GBC — Tu salud, nuestra prioridad",
+  "main": "index.JS",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.JS",
+    "dev": "nodemon index.JS"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bootstrap": "^5.3.8",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-handlebars": "^9.0.1",
+    "express-session": "^1.18.0",
+    "handlebars": "^4.7.9",
+    "mysql2": "^3.22.3",
+    "sql.js": "^1.10.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
 }

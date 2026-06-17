@@ -305,6 +305,9 @@ app.post('/contacto', async (req, res) => {
 // ============ RUTAS — API ============
 
 app.post('/api/pedido', async (req, res) => {
+    if (!req.session.usuario) {
+        return res.status(401).json({ error: 'Debes iniciar sesión para realizar un pedido' });
+    }
     const { items, total, direccion } = req.body;
     if (!items || !total || !direccion) return res.status(400).json({ error: 'Datos incompletos o falta dirección' });
 

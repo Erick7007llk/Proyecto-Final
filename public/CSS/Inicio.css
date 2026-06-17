@@ -1,4 +1,4 @@
-/* ============ TOKENS ============ */
+
 :root {
   --bg: #ffffff;
   --fg: #0f1c33;
@@ -1201,4 +1201,119 @@ section {
     font-size: 12px;
     padding: 6px 12px;
   }
+}
+
+/* ============ CHECKOUT MODAL ============ */
+.checkout-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 28, 51, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.checkout-modal {
+  background: var(--card);
+  width: 100%;
+  max-width: 450px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-elegant);
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.checkout-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: #f8fafc;
+}
+
+.checkout-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+}
+
+.checkout-modal-header button {
+  font-size: 18px;
+  color: var(--muted);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.05);
+  transition: var(--transition);
+}
+
+.checkout-modal-header button:hover {
+  background: rgba(0,0,0,0.1);
+  color: var(--fg);
+}
+
+.checkout-modal-body {
+  padding: 24px;
+}
+
+.checkout-modal-body p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--fg);
+}
+
+.input-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  transition: var(--transition);
+}
+
+.input-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(17, 48, 95, 0.1);
+}
+
+.checkout-modal-footer {
+  padding: 20px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #f8fafc;
 }

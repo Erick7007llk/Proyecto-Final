@@ -67,7 +67,7 @@ DB_NAME=farmacia_gbc
 
 ### Interfaz del Sistema
 ![Evidencia de la Interfaz](./public/img/captura_interfaz.png)
-*(Captura mostrando la tienda, el carrito de compras o el panel de administración)*
+
 
 ### Base de Datos MySQL
 ![Evidencia de MySQL](./public/img/captura_bd.png)

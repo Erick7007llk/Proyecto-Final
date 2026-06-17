@@ -194,9 +194,62 @@ async function checkout() {
     return;
   }
   
-  const direccion = prompt("Por favor, ingresa tu dirección de entrega:");
+  try {
+    const authRes = await fetch("/api/auth/me");
+    const authData = await authRes.json();
+    if (!authData.loggedIn) {
+      showToast("Debes iniciar sesión para comprar. Redirigiendo...", "error");
+      setTimeout(() => window.location.href = "/login", 2000);
+      return;
+    }
+  } catch (err) {
+    showToast("Error al verificar la sesión.", "error");
+    return;
+  }
+
+  // Mostrar modal de dirección en lugar del prompt nativo
+  showCheckoutModal();
+}
+
+function showCheckoutModal() {
+  const existing = document.getElementById('checkout-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'checkout-modal';
+  modal.className = 'checkout-modal-overlay';
+  modal.innerHTML = `
+    <div class="checkout-modal">
+      <div class="checkout-modal-header">
+        <h3>📍 Dirección de Entrega</h3>
+        <button onclick="document.getElementById('checkout-modal').remove()">✕</button>
+      </div>
+      <div class="checkout-modal-body">
+        <p>Por favor, ingresa la dirección a la que enviaremos tu pedido.</p>
+        <div class="input-group">
+          <label>Dirección completa</label>
+          <textarea id="checkout-address" placeholder="Ej. Av. Juárez 245, Centro Histórico, CDMX" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="checkout-modal-footer">
+        <button class="btn btn-outline" onclick="document.getElementById('checkout-modal').remove()">Cancelar</button>
+        <button class="btn btn-hero" onclick="submitOrder()">Confirmar Pedido</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // Hacer foco en el textarea automáticamente
+  setTimeout(() => document.getElementById('checkout-address')?.focus(), 100);
+}
+
+async function submitOrder() {
+  const addressEl = document.getElementById('checkout-address');
+  const direccion = addressEl ? addressEl.value : '';
+  
   if (!direccion || direccion.trim() === "") {
     showToast("Debes ingresar una dirección para continuar.", "error");
+    addressEl?.focus();
     return;
   }
 
@@ -214,6 +267,7 @@ async function checkout() {
       cart = [];
       saveCart();
       closeDrawer();
+      document.getElementById('checkout-modal').remove();
     } else {
       showToast(data.error || "Error al procesar el pedido", "error");
     }

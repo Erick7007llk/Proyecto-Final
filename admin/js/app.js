@@ -2,6 +2,7 @@
   const session = await GBCAuth.requireAuth();
   if (!session) return;
 
+  await GBCStorage.initApi();
   GBCSeed.init();
 
   const avatar = document.getElementById('user-avatar');
@@ -20,7 +21,9 @@
   const pageSubtitle = document.getElementById('page-subtitle');
 
   document.querySelectorAll('.nav-link[data-module]').forEach((btn) => {
-    btn.addEventListener('click', () => switchModule(btn.dataset.module));
+    btn.addEventListener('click', () => {
+      void switchModule(btn.dataset.module);
+    });
   });
 
   document.getElementById('btn-logout').addEventListener('click', () => {
@@ -46,7 +49,9 @@
     return 'proveedores';
   }
 
-  function switchModule(id) {
+  let isFirstModuleSwitch = true;
+
+  async function switchModule(id) {
     if (!GBCModules.MODULES[id]) return;
     currentModule = id;
     editingId = null;
@@ -64,6 +69,15 @@
     if (window.location.hash.replace(/^#/, '') !== id) {
       window.location.hash = id;
     }
+    if (GBCStorage.isApiModule(id) && !isFirstModuleSwitch) {
+      try {
+        await GBCStorage.refresh(id);
+      } catch (err) {
+        console.error(err);
+        alert(err.message || 'No se pudieron cargar los datos desde el servidor.');
+      }
+    }
+    isFirstModuleSwitch = false;
     renderCurrentModule();
   }
 
@@ -225,12 +239,20 @@
       b.onclick = () => { editingId = Number(b.dataset.id); renderCurrentModule(); };
     });
     document.querySelectorAll('.btn-delete').forEach((b) => {
-      b.onclick = () => {
+      b.onclick = async () => {
         if (!confirm('¿Eliminar este registro?')) return;
         const id = Number(b.dataset.id);
-        saveItems(mod.storageKey, all.filter((i) => i.id !== id));
-        if (editingId === id) editingId = null;
-        renderCurrentModule();
+        try {
+          if (GBCStorage.isApiModule(mod.storageKey)) {
+            await GBCStorage.deleteRecord(mod.storageKey, id);
+          } else {
+            saveItems(mod.storageKey, all.filter((i) => i.id !== id));
+          }
+          if (editingId === id) editingId = null;
+          renderCurrentModule();
+        } catch (err) {
+          alert(err.message || 'No se pudo eliminar');
+        }
       };
     });
   }
@@ -265,7 +287,7 @@
     return data;
   }
 
-  function saveEntity(mod, all) {
+  async function saveEntity(mod, all) {
     const data = readForm(mod);
     const required = mod.fields.filter((f) => f.type !== 'radio' && !f.type).slice(0, 2);
     for (const f of required) {
@@ -274,15 +296,26 @@
         return;
       }
     }
-    if (editingId) {
-      const idx = all.findIndex((i) => i.id === editingId);
-      if (idx >= 0) all[idx] = { ...all[idx], ...data };
-    } else {
-      all.push({ id: GBCStorage.nextId(all), ...data });
+    try {
+      if (GBCStorage.isApiModule(mod.storageKey)) {
+        if (editingId) {
+          await GBCStorage.updateRecord(mod.storageKey, editingId, data);
+        } else {
+          await GBCStorage.createRecord(mod.storageKey, data);
+        }
+      } else if (editingId) {
+        const idx = all.findIndex((i) => i.id === editingId);
+        if (idx >= 0) all[idx] = { ...all[idx], ...data };
+        saveItems(mod.storageKey, all);
+      } else {
+        all.push({ id: GBCStorage.nextId(all), ...data });
+        saveItems(mod.storageKey, all);
+      }
+      editingId = null;
+      renderCurrentModule();
+    } catch (err) {
+      alert(err.message || 'No se pudo guardar');
     }
-    saveItems(mod.storageKey, all);
-    editingId = null;
-    renderCurrentModule();
   }
 
   function exportCsv(mod, all) {
@@ -363,12 +396,12 @@
             </div>
             <div class="form-group"><label>Fecha</label><input type="date" id="doc-fecha"></div>
             ${isCompra ? `
-            <div class="form-group"><label>RNC</label><input type="text" id="doc-rnc" value="00100000001"></div>
+            <div class="form-group"><label>RNC</label><input type="text" id="doc-rnc"></div>
             <div class="form-group"><label>Tipo de Compra</label><select id="doc-tipo"><option value="">Selecciona tipo</option><option>Inventario</option><option>Urgente</option></select></div>
             <div class="form-group"><label>Condición de Pago</label><select id="doc-pago"><option>Contado</option><option>Crédito</option></select></div>
             ` : `
             <div class="form-group"><label>Tipo</label><select id="doc-tipo"><option>Contado</option><option>Crédito</option></select></div>
-            <div class="form-group"><label>NCF</label><input type="text" id="doc-ncf" value="B0100000001"></div>
+            <div class="form-group"><label>NCF</label><input type="text" id="doc-ncf"></div>
             `}
           </div>
           <div class="add-row">
@@ -411,20 +444,18 @@
     document.getElementById('btn-add-line').onclick = () => {
       const nombre = document.getElementById('line-codigo').value.trim();
       const cantidad = Number(document.getElementById('line-cantidad').value) || 1;
-      const prod = productos.find((p) => p.nombre.toLowerCase() === nombre.toLowerCase()) || {
-        nombre: nombre || 'Artículo',
-        tipo: 'General',
-        precio: 100,
-        presentacion: 'Unidades',
-        lote: 'L' + Date.now(),
-        vence: '2027-12-31'
-      };
+      const prod = productos.find((p) => (p.nombre || '').toLowerCase() === nombre.toLowerCase());
+      if (!prod) {
+        alert('Selecciona un producto válido de la lista.');
+        return;
+      }
       docLines.push({
-        codigo: String(docLines.length + 1),
+        id_producto: prod.id,
+        codigo: String(prod.id),
         articulo: prod.nombre,
         tipo: prod.tipo || 'General',
-        precio: Number(prod.precio) || 100,
-        descuento: 15,
+        precio: Number(prod.precio) || 0,
+        descuento: 0,
         cantidad,
         lote: prod.lote,
         vence: prod.vence,
@@ -437,7 +468,7 @@
 
     document.getElementById('doc-cancel').onclick = () => { docLines = []; renderCurrentModule(); };
     document.getElementById('doc-print').onclick = () => window.print();
-    document.getElementById('doc-save').onclick = () => saveDocument(mod, num, grand);
+    document.getElementById('doc-save').onclick = () => { void saveDocument(mod, num, grand); };
     document.querySelectorAll('.btn-remove-line').forEach((b) => {
       b.onclick = () => {
         docLines.splice(Number(b.dataset.idx), 1);
@@ -474,30 +505,55 @@
     </tr>`;
   }
 
-  function saveDocument(mod, numero, total) {
+  async function saveDocument(mod, numero, total) {
     if (!docLines.length) {
       alert('Agrega al menos un artículo.');
       return;
     }
-    const items = getItems(mod.storageKey);
-    items.push({
-      id: GBCStorage.nextId(items),
-      numero,
-      fecha: document.getElementById('doc-fecha')?.value || new Date().toISOString().slice(0, 10),
-      lineas: [...docLines],
-      total,
-      notas: document.getElementById('doc-notas')?.value || '',
-      creado: new Date().toISOString()
-    });
-    saveItems(mod.storageKey, items);
-    alert(`${mod.docType === 'compra' ? 'Orden' : 'Factura'} guardada correctamente.`);
-    docLines = [];
-    renderCurrentModule();
+    const entityId = Number(document.getElementById('doc-entity')?.value || 0);
+    const fecha = document.getElementById('doc-fecha')?.value || new Date().toISOString().slice(0, 10);
+    const ncf = document.getElementById('doc-ncf')?.value?.trim() || null;
+    const estado = document.getElementById('doc-tipo')?.value?.trim() || 'pendiente';
+
+    try {
+      if (mod.docType === 'factura') {
+        await GBCStorage.createRecord('facturas', {
+          id_cliente: entityId,
+          fecha,
+          ncf,
+          lines: docLines.map((l) => ({
+            id_producto: l.id_producto,
+            cantidad: l.cantidad,
+            precio_unitario: l.precio
+          }))
+        });
+      } else {
+        await GBCStorage.createRecord('compras', {
+          id_proveedor: entityId,
+          fecha_pedido: new Date(fecha),
+          estado,
+          total,
+          lines: docLines.map((l) => ({
+            id_producto: l.id_producto,
+            cantidad: l.cantidad,
+            precio_compra: l.precio,
+            itbis: l.itbis,
+            descuento: l.descuento
+          }))
+        });
+      }
+
+      alert(`${mod.docType === 'compra' ? 'Orden' : 'Factura'} guardada correctamente en la BD.`);
+      docLines = [];
+      renderCurrentModule();
+    } catch (err) {
+      alert(err.message || 'No se pudo guardar en la base de datos');
+    }
   }
 
-  switchModule(resolveInitialModule());
+  void switchModule(resolveInitialModule());
   window.addEventListener('hashchange', () => {
     const id = window.location.hash.replace(/^#/, '').trim();
-    if (id && GBCModules.MODULES[id] && id !== currentModule) switchModule(id);
+    if (id && GBCModules.MODULES[id] && id !== currentModule) void switchModule(id);
   });
 })();

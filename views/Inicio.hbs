@@ -13,9 +13,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,700;1,800&family=Poppins:wght@600;700;800&display=swap"
     rel="stylesheet" />
-  <link rel="stylesheet" href="/CSS/Inicio.css">
-  <link rel="stylesheet" href="/CSS/nosotros.css">
-  <link rel="stylesheet" href="/CSS/contacto.css">
+  <link rel="stylesheet" href="/css/Inicio.css">
+  <link rel="stylesheet" href="/css/nosotros.css">
+  <link rel="stylesheet" href="/css/contacto.css">
 </head>
 
 <body>
@@ -131,7 +131,7 @@
               {{/if}}
             </div>
             <div class="offer-img">
-              <img src="{{this.imagen}}" alt="{{this.nombre}}" loading="lazy" width="320" height="320" onerror="this.onerror=null;this.src='/IMG/categorias/default.svg'">
+              <img src="{{this.imagen}}" alt="{{this.nombre}}" loading="lazy" width="320" height="320" onerror="this.onerror=null;this.src='/img/categorias/default.svg'">
             </div>
             <h3>{{this.nombre}}</h3>
             <p class="desc">{{this.descripcion}}</p>
@@ -143,7 +143,8 @@
                 {{/if}}
               </div>
               <button class="btn btn-primary btn-sm"
-                onclick="addToCart('{{this.nombre}}', {{this.precio}})">Comprar</button>
+                data-id="{{this.id}}" data-name="{{this.nombre}}" data-price="{{this.precio}}" data-stock="{{this.stock}}"
+                onclick="addToCartFromBtn(this)">Comprar</button>
             </div>
           </article>
           {{/each}}
@@ -261,46 +262,43 @@
       </div>
     </section>
 
-    <section id="contacto" class="section-soft">
-      <div class="container contact-grid">
-        <div>
-          <span class="tag tag-accent">Contáctanos</span>
-          <h2 class="section-title-large">Estamos aquí<br /><span class="text-accent">ayudarte</span>.</h2>
-          <p class="section-subtitle-medium">¿Tienes alguna duda sobre un producto o quieres hacer un pedido? Escríbenos
-            y nuestro equipo te responderá rápido.</p>
-          <div class="contact-info">
-            <div class="item">
-              <div class="icon-box">📞</div>
-              <div><small>Llámanos</small>
-                <p>(55) 1234-5678</p>
-              </div>
+    <section id="contacto" class="contact-section">
+      <div class="container">
+        <div class="contact-header">
+          <span class="support-badge">SOPORTE</span>
+          <h2 class="contact-title">¿Tienes dudas?</h2>
+          <p class="contact-subtitle">Estamos siempre disponibles para ayudarte.</p>
+        </div>
+
+        <div class="contact-cards">
+          <div class="contact-card">
+            <div class="contact-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2 5.5C2 4.11929 3.11929 3 4.5 3H19.5C20.8807 3 22 4.11929 22 5.5V18.5C22 19.8807 20.8807 21 19.5 21H4.5C3.11929 21 2 19.8807 2 18.5V5.5ZM4.5 5C4.22386 5 4 5.22386 4 5.5V6.78207L11.5833 11.8358C11.8341 12.003 12.1659 12.003 12.4167 11.8358L20 6.78207V5.5C20 5.22386 19.7761 5 19.5 5H4.5ZM20 9.18378L13.5222 13.502C12.6027 14.115 11.3973 14.115 10.4778 13.502L4 9.18378V18.5C4 18.7761 4.22386 19 4.5 19H19.5C19.7761 19 20 18.7761 20 18.5V9.18378Z"/>
+              </svg>
             </div>
-            <div class="item">
-              <div class="icon-box">✉️</div>
-              <div><small>Escríbenos</small>
-                <p>contacto@farmaciagbc.com</p>
-              </div>
+            <h3>Escríbenos</h3>
+            <p>contacto@farmaciagbc.com</p>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21.3843 17.5813C21.8475 19.0177 20.8524 20.4746 19.3499 20.8447C15.9328 21.6865 11.5828 20.5982 7.74797 16.7634C3.91316 12.9286 2.82483 8.57863 3.66668 5.16147C4.03673 3.65902 5.49367 2.66395 6.93005 3.12711L9.75487 4.03845C10.7412 4.35649 11.3506 5.37255 11.2007 6.40248C11.087 7.18322 11.2461 7.99042 11.6917 8.70588C12.4418 9.91032 13.626 11.0945 14.8305 11.8446C15.5459 12.2902 16.3531 12.4493 17.1339 12.3357C18.1638 12.1857 19.1799 12.7952 19.4979 13.7815L21.3843 17.5813Z"/>
+              </svg>
             </div>
-            <div class="item">
-              <div class="icon-box">📍</div>
-              <div><small>Oficinas centrales</small>
-                <p>Av. Juárez 245, CDMX</p>
-              </div>
+            <h3>Llámanos</h3>
+            <p>(55) 1234-5678</p>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C7.58172 2 4 5.58172 4 10C4 14.1594 7.64333 19.4447 11.1963 23.3644C11.6214 23.8335 12.3786 23.8335 12.8037 23.3644C16.3567 19.4447 20 14.1594 20 10C20 5.58172 16.4183 2 12 2ZM12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10C15 11.6569 13.6569 13 12 13Z"/>
+              </svg>
             </div>
+            <h3>Oficinas centrales</h3>
+            <p>Av. Juárez 245, CDMX</p>
           </div>
         </div>
-        <form class="form" id="contact-form" action="/contacto" method="POST">
-          <div class="row">
-            <div><label for="name">Nombre</label><input id="name" name="name" required placeholder="Tu nombre" /></div>
-            <div><label for="phone">Teléfono</label><input id="phone" name="phone" type="tel"
-                placeholder="(55) 0000 0000" /></div>
-          </div>
-          <div><label for="email">Correo</label><input id="email" name="email" type="email" required
-              placeholder="tu@correo.com" /></div>
-          <div><label for="msg">Mensaje</label><textarea id="msg" name="msg" required rows="5"
-              placeholder="¿En qué podemos ayudarte?"></textarea></div>
-          <button type="submit" class="btn btn-hero btn-lg btn-block">Enviar mensaje ➤</button>
-        </form>
       </div>
     </section>
 
@@ -326,7 +324,7 @@
   <!-- Toast notifications -->
   <div class="toast-container" id="toast-container"></div>
 
-  <script src="/JS/Inicio.js"></script>
+  <script src="/js/Inicio.js"></script>
 </body>
 
 </html>

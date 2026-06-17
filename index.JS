@@ -4,96 +4,57 @@ const express = require('express');
 const path = require('path');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
-const bcrypt = require('bcryptjs');
+
+const { initSchema, testConnection, ensureDbSeed } = require('./db');
+const authService = require('./services/authService');
+const productosService = require('./services/productosService');
+const pedidosService = require('./services/pedidosService');
+const contactoService = require('./services/contactoService');
+const { createAdminRouter } = require('./routes/adminApi');
 
 const app = express();
 const port = process.env.PORT || 5500;
 
-// ============ DATOS EN MEMORIA (sin base de datos) ============
-
-const productos = require('./data/productos');
-
-const usuarios = []; // Usuarios registrados en memoria
-const pedidos = [];  // Pedidos en memoria
-const contactos = []; // Mensajes de contacto en memoria
-
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@gbc.com').trim().toLowerCase();
-const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD || 'admin123').trim();
-
-/** El correo configurado en .env siempre es administrador */
-function syncAdminRoles() {
-    usuarios.forEach(u => {
-        if ((u.correo || '').toLowerCase() === ADMIN_EMAIL) {
-            u.rol = 'admin';
-        }
-    });
-}
-
-function resolveRol(usuario) {
-    if (!usuario) return 'cliente';
-    if ((usuario.correo || '').toLowerCase() === ADMIN_EMAIL) {
-        usuario.rol = 'admin';
-        return 'admin';
-    }
-    return usuario.rol === 'admin' ? 'admin' : 'cliente';
-}
-
-function verifyPassword(plain, hash) {
-    const p = (plain || '').trim();
-    if (!p || !hash) return false;
-    try {
-        return bcrypt.compareSync(p, hash);
-    } catch {
-        return false;
-    }
-}
+const ADMIN_EMAIL = authService.ADMIN_EMAIL;
 
 function isAdmin(req) {
     return req.session.usuario?.rol === 'admin';
 }
 
-/** Solo localhost: permite servir /admin para captura en Figma sin sesión */
-function isLocalFigmaCapture(req) {
-    const host = req.hostname || '';
-    const local = host === 'localhost' || host === '127.0.0.1';
-    return local && req.query.figma_capture === '1';
-}
-
 function requireAdmin(req, res, next) {
-    if (isLocalFigmaCapture(req)) return next();
     if (!isAdmin(req)) {
+        if (req.originalUrl.startsWith('/api/')) {
+            return res.status(401).json({ error: 'Sesión expirada o no autorizado' });
+        }
         return res.redirect('/login?error=Debes iniciar sesión con una cuenta de administrador');
     }
     next();
 }
 
-function findUsuarioPorCorreo(correo) {
-    return usuarios.find(u => (u.correo || '').toLowerCase() === (correo || '').trim().toLowerCase());
-}
+const CAT_ICONS = {
+    Medicamentos: '💊',
+    Vitaminas: '🧬',
+    Cardiovascular: '❤️',
+    Dermocosmética: '✨',
+    Bebés: '👶',
+    Higiene: '🧴',
+    Equipos: '🩺'
+};
 
-function getOrCreateAdmin() {
-    syncAdminRoles();
-    let admin = findUsuarioPorCorreo(ADMIN_EMAIL);
-    if (!admin) {
-        admin = {
-            id: usuarios.length + 1,
-            nombre: 'Administrador',
-            correo: ADMIN_EMAIL,
-            password: bcrypt.hashSync(ADMIN_PASSWORD, 10),
-            rol: 'admin'
-        };
-        usuarios.push(admin);
-    }
-    admin.rol = 'admin';
-    admin.correo = ADMIN_EMAIL;
-    return admin;
+function buildGrupos(productos) {
+    const gruposMap = {};
+    productos.forEach(p => {
+        if (!gruposMap[p.categoria]) {
+            gruposMap[p.categoria] = {
+                categoria: p.categoria,
+                icono: CAT_ICONS[p.categoria] || '🏷️',
+                productos: []
+            };
+        }
+        gruposMap[p.categoria].productos.push(p);
+    });
+    return Object.values(gruposMap);
 }
-
-function seedAdminIfMissing() {
-    getOrCreateAdmin();
-}
-
-seedAdminIfMissing();
 
 // ============ MOTOR DE VISTAS ============
 app.engine('hbs', exphbs.engine({
@@ -116,7 +77,6 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-// Variables globales para vistas + mantener rol admin en sesión
 app.use((req, res, next) => {
     if (req.session.usuario) {
         const correo = (req.session.usuario.correo || '').toLowerCase();
@@ -131,7 +91,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/JS', express.static(path.join(__dirname, 'JS')));
+// app.use('/JS', express.static(path.join(__dirname, 'JS'))); // Mantenido por public/
 
 app.get('/api/auth/me', (req, res) => {
     if (!req.session.usuario) {
@@ -148,45 +108,58 @@ app.get('/api/auth/me', (req, res) => {
     });
 });
 
+app.use('/api/admin', createAdminRouter(requireAdmin));
+
 app.get('/admin/login.html', (req, res) => res.redirect('/login'));
 app.get('/admin/login', (req, res) => res.redirect('/login'));
-app.get('/admin', requireAdmin, (req, res) => {
-    const q = isLocalFigmaCapture(req) ? '?figma_capture=1' : '';
-    res.redirect(`/admin/index.html${q}`);
-});
-app.get('/admin/index.html', requireAdmin, (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin', 'index.html'));
-});
+
+function renderAdmin(req, res) {
+    res.render('admin', {
+        layout: false,
+        title: 'Panel Admin — Farmacia GBC'
+    });
+}
+
+app.get('/admin', requireAdmin, renderAdmin);
+app.get('/admin/index.html', requireAdmin, renderAdmin);
 app.use('/admin', express.static(path.join(__dirname, 'admin'), { index: false }));
 
 // ============ RUTAS — PÁGINAS ============
 
-// Inicio (página única: hero, ofertas, categorías, nosotros, contacto)
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     if (isAdmin(req)) return res.redirect('/admin/');
 
-    const conDescuento = productos.filter(p => p.activo && p.descuento);
-    const porCategoria = new Map();
-    for (const p of conDescuento) {
-        if (!porCategoria.has(p.categoria)) porCategoria.set(p.categoria, p);
-    }
-    const destacadas = [...porCategoria.values()];
-    const idsDestacadas = new Set(destacadas.map(p => p.id));
-    const ofertas = [...destacadas, ...conDescuento.filter(p => !idsDestacadas.has(p.id))].slice(0, 9);
+    try {
+        const productos = await productosService.getProductosWeb();
+        const conDescuento = productos.filter(p => p.descuento);
+        const porCategoria = new Map();
+        for (const p of conDescuento) {
+            if (!porCategoria.has(p.categoria)) porCategoria.set(p.categoria, p);
+        }
+        const destacadas = [...porCategoria.values()];
+        const idsDestacadas = new Set(destacadas.map(p => p.id));
+        const ofertas = [...destacadas, ...conDescuento.filter(p => !idsDestacadas.has(p.id))].slice(0, 9);
 
-    res.render('Inicio', {
-        title: 'Farmacia GBC — Tu salud, nuestra prioridad',
-        ofertas
-    });
+        if (!ofertas.length) {
+            ofertas.push(...productos.slice(0, 9));
+        }
+
+        res.render('inicio', {
+            title: 'Farmacia GBC — Tu salud, nuestra prioridad',
+            ofertas
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al cargar productos desde la base de datos');
+    }
 });
 
-// Login
 app.get('/login', (req, res) => {
     if (req.session.usuario) {
         if (isAdmin(req)) return res.redirect('/admin/');
         return res.redirect('/');
     }
-    res.render('Login', {
+    res.render('login', {
         layout: false,
         error: req.query.error || null,
         success: req.query.success || null,
@@ -194,72 +167,49 @@ app.get('/login', (req, res) => {
     });
 });
 
-// Productos
-app.get('/productos', (req, res) => {
+app.get('/productos', async (req, res) => {
     const categoria = req.query.categoria || 'todos';
 
-    // Filtrar productos activos
-    let filtrados;
-    if (categoria === 'todos') {
-        filtrados = productos.filter(p => p.activo).sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nombre.localeCompare(b.nombre));
-    } else {
-        filtrados = productos.filter(p => p.activo && p.categoria === categoria).sort((a, b) => a.nombre.localeCompare(b.nombre));
+    try {
+        const todos = await productosService.getProductosWeb();
+        let filtrados = categoria === 'todos'
+            ? todos
+            : todos.filter(p => p.categoria === categoria);
+
+        filtrados = filtrados.sort((a, b) =>
+            a.categoria.localeCompare(b.categoria) || a.nombre.localeCompare(b.nombre)
+        );
+
+        const categoriasSet = [...new Set(todos.map(p => p.categoria))].sort();
+        const categorias = categoriasSet.map(c => ({ categoria: c }));
+        const grupos = buildGrupos(filtrados);
+
+        res.render('productos', {
+            title: 'Productos — Farmacia GBC',
+            productos: filtrados,
+            grupos,
+            categorias,
+            categoriaActual: categoria
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al cargar el catálogo');
     }
-
-    // Obtener categorías únicas
-    const categoriasSet = [...new Set(productos.filter(p => p.activo).map(p => p.categoria))].sort();
-    const categorias = categoriasSet.map(c => ({ categoria: c }));
-
-    // Emojis para cada categoría
-    const catIcons = {
-        'Medicamentos': '💊',
-        'Vitaminas': '🧬',
-        'Cardiovascular': '❤️',
-        'Dermocosmética': '✨',
-        'Bebés': '👶',
-        'Higiene': '🧴',
-        'Equipos': '🩺'
-    };
-
-    // Agrupar productos por categoría
-    const gruposMap = {};
-    filtrados.forEach(p => {
-        if (!gruposMap[p.categoria]) {
-            gruposMap[p.categoria] = {
-                categoria: p.categoria,
-                icono: catIcons[p.categoria] || '🏷️',
-                productos: []
-            };
-        }
-        gruposMap[p.categoria].productos.push(p);
-    });
-    const grupos = Object.values(gruposMap);
-
-    res.render('Productos', {
-        title: 'Productos — Farmacia GBC',
-        productos: filtrados,
-        grupos,
-        categorias,
-        categoriaActual: categoria
-    });
 });
 
-// Redirecciones a secciones del inicio
 app.get('/ofertas', (req, res) => res.redirect('/#ofertas'));
 app.get('/nosotros', (req, res) => res.redirect('/#nosotros'));
 app.get('/contacto', (req, res) => res.redirect('/#contacto'));
 
-// Sucursales
 app.get('/sucursales', (req, res) => {
-    res.render('Sucursales', {
+    res.render('sucursales', {
         title: 'Sucursales — Farmacia GBC'
     });
 });
 
 // ============ RUTAS — AUTENTICACIÓN ============
 
-// Registrar
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
     const { nombre, correo, password } = req.body;
 
     if (!nombre || !correo || !password) {
@@ -269,131 +219,132 @@ app.post('/register', (req, res) => {
         return res.redirect('/login?error=La contraseña debe tener al menos 6 caracteres&register=1');
     }
 
-    const correoNorm = correo.trim().toLowerCase();
-    const existe = usuarios.find(u => (u.correo || '').toLowerCase() === correoNorm);
-    if (existe) {
-        return res.redirect('/login?error=Este correo ya está registrado&register=1');
+    try {
+        const nuevoUsuario = await authService.registerUser({ nombre, correo, password });
+        console.log(`✅ Nuevo ${nuevoUsuario.rol === 'admin' ? 'ADMIN' : 'usuario'}: ${nombre} (${nuevoUsuario.correo})`);
+
+        if (nuevoUsuario.rol === 'admin') {
+            req.session.usuario = {
+                id: nuevoUsuario.id,
+                id_cliente: nuevoUsuario.id_cliente,
+                nombre: nuevoUsuario.nombre,
+                correo: nuevoUsuario.correo,
+                rol: 'admin'
+            };
+            return req.session.save((err) => {
+                if (err) console.error(err);
+                res.redirect('/admin/');
+            });
+        }
+
+        res.redirect('/login?success=Registro exitoso. Inicia sesión con tus credenciales');
+    } catch (err) {
+        console.error('❌ Error en registro:', err.message, err.sql || '');
+        const msg = encodeURIComponent(err.message || 'No se pudo registrar');
+        res.redirect(`/login?error=${msg}&register=1`);
     }
-
-    const hash = bcrypt.hashSync(password.trim(), 10);
-    const esAdmin = correoNorm === ADMIN_EMAIL;
-
-    const nuevoUsuario = {
-        id: usuarios.length + 1,
-        nombre,
-        correo: correoNorm,
-        password: hash,
-        rol: esAdmin ? 'admin' : 'cliente'
-    };
-    usuarios.push(nuevoUsuario);
-
-    console.log(`✅ Nuevo ${esAdmin ? 'ADMIN' : 'usuario'}: ${nombre} (${correoNorm})`);
-
-    if (esAdmin) {
-        req.session.usuario = {
-            id: nuevoUsuario.id,
-            nombre: nuevoUsuario.nombre,
-            correo: nuevoUsuario.correo,
-            rol: 'admin'
-        };
-        return req.session.save((err) => {
-            if (err) console.error(err);
-            res.redirect('/admin/');
-        });
-    }
-    res.redirect('/login?success=Registro exitoso. Inicia sesión con tus credenciales');
 });
 
-// Login
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const { correo, password } = req.body;
 
     if (!correo || !password) {
         return res.redirect('/login?error=Correo y contraseña son obligatorios');
     }
 
-    const correoNorm = (correo || '').trim().toLowerCase();
-    const passwordTrim = (password || '').trim();
-
-    let usuario;
-    let rol;
-
-    if (correoNorm === ADMIN_EMAIL) {
-        usuario = getOrCreateAdmin();
-        const ok = passwordTrim === ADMIN_PASSWORD || verifyPassword(passwordTrim, usuario.password);
-        if (!ok) {
+    try {
+        const usuario = await authService.loginUser(correo, password);
+        if (!usuario) {
             return res.redirect('/login?error=Correo o contraseña incorrectos');
         }
-        if (passwordTrim === ADMIN_PASSWORD) {
-            usuario.password = bcrypt.hashSync(ADMIN_PASSWORD, 10);
-        }
-        rol = 'admin';
-    } else {
-        syncAdminRoles();
-        usuario = findUsuarioPorCorreo(correoNorm);
-        if (!usuario || !verifyPassword(passwordTrim, usuario.password)) {
-            return res.redirect('/login?error=Correo o contraseña incorrectos');
-        }
-        rol = resolveRol(usuario);
+
+        req.session.usuario = {
+            id: usuario.id,
+            id_cliente: usuario.id_cliente,
+            nombre: usuario.nombre,
+            correo: usuario.correo,
+            rol: usuario.rol
+        };
+
+        const destino = usuario.rol === 'admin' ? '/admin/' : '/';
+        console.log(`✅ Login: ${usuario.nombre} (${usuario.rol}) → ${destino}`);
+
+        req.session.save((err) => {
+            if (err) {
+                console.error('Error al guardar sesión:', err);
+                return res.redirect('/login?error=No se pudo iniciar sesión. Intenta de nuevo');
+            }
+            res.redirect(destino);
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/login?error=Error al iniciar sesión');
     }
-
-    req.session.usuario = {
-        id: usuario.id,
-        nombre: usuario.nombre,
-        correo: ADMIN_EMAIL === correoNorm ? ADMIN_EMAIL : (usuario.correo || '').toLowerCase(),
-        rol
-    };
-
-    const destino = rol === 'admin' ? '/admin/' : '/';
-    console.log(`✅ Login: ${usuario.nombre} (${rol}) → ${destino}`);
-
-    req.session.save((err) => {
-        if (err) {
-            console.error('Error al guardar sesión:', err);
-            return res.redirect('/login?error=No se pudo iniciar sesión. Intenta de nuevo');
-        }
-        res.redirect(destino);
-    });
 });
 
-// Logout
 app.get('/logout', (req, res) => {
     req.session.destroy(() => res.redirect('/login'));
 });
 
 // ============ RUTAS — CONTACTO ============
 
-app.post('/contacto', (req, res) => {
+app.post('/contacto', async (req, res) => {
     const { name, phone, email, msg } = req.body;
     if (!name || !email || !msg) return res.redirect('/#contacto');
 
-    contactos.push({ id: contactos.length + 1, nombre: name, telefono: phone || '', correo: email, mensaje: msg });
-    console.log(`📩 Mensaje de: ${name} (${email})`);
-    res.redirect('/?contacto=enviado#contacto');
+    try {
+        await contactoService.guardarMensaje({ name, phone, email, msg });
+        console.log(`📩 Mensaje guardado de: ${name} (${email})`);
+        res.redirect('/?contacto=enviado#contacto');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/?contacto=error#contacto');
+    }
 });
 
 // ============ RUTAS — API ============
 
-app.post('/api/pedido', (req, res) => {
-    const { items, total } = req.body;
-    if (!items || !total) return res.status(400).json({ error: 'Datos incompletos' });
+app.post('/api/pedido', async (req, res) => {
+    const { items, total, direccion } = req.body;
+    if (!items || !total || !direccion) return res.status(400).json({ error: 'Datos incompletos o falta dirección' });
 
-    const usuario = req.session.usuario;
-    const nombre = usuario ? usuario.nombre : 'Invitado';
-    const correo = usuario ? usuario.correo : 'sin-correo@invitado.com';
-    const usuarioId = usuario ? usuario.id : null;
-
-    const pedidoId = pedidos.length + 1;
-    pedidos.push({ id: pedidoId, usuario_id: usuarioId, nombre_cliente: nombre, correo_cliente: correo, items, total, estado: 'pendiente' });
-
-    console.log(`🛒 Pedido #${pedidoId} de ${nombre} — $${total}`);
-    res.json({ success: true, pedidoId });
+    try {
+        const pedidoId = await pedidosService.crearPedidoWeb({
+            usuario: req.session.usuario,
+            items,
+            total,
+            direccion
+        });
+        const nombre = req.session.usuario?.nombre || 'Invitado';
+        console.log(`🛒 Pedido #${pedidoId} de ${nombre} — $${total}`);
+        res.json({ success: true, pedidoId });
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ error: err.message || 'No se pudo procesar el pedido' });
+    }
 });
 
 // ============ INICIAR SERVIDOR ============
 
-app.listen(port, () => {
-    console.log(`\n🏥 Farmacia GBC — http://localhost:${port}`);
-    console.log(`📦 ${productos.length} productos cargados en memoria`);
-    console.log(`⚠️  Modo sin base de datos — los datos no se persisten\n`);
-});
+async function start() {
+    try {
+        await testConnection();
+        await initSchema();
+        await ensureDbSeed();
+        await authService.ensureAdminAccount();
+
+        const productos = await productosService.getProductosWeb();
+
+        app.listen(port, () => {
+            console.log(`\n🏥 Farmacia GBC — http://localhost:${port}`);
+            console.log(`🗄️  Base de datos: ${process.env.DB_NAME || 'farmacia_gbc'}`);
+            console.log(`📦 ${productos.length} productos disponibles (con stock)\n`);
+        });
+    } catch (err) {
+        console.error('\n❌ No se pudo conectar a MySQL:', err.message);
+        console.error('   Verifica DB_HOST, DB_USER, DB_PASS y DB_NAME en .env\n');
+        process.exit(1);
+    }
+}
+
+start();

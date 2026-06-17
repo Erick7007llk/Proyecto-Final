@@ -1159,7 +1159,14 @@ section {
 .value.visible {
   opacity: 1;
   transform: translateY(0);
+  
 }
+
+.value.visible {
+  animation: float 3.5s ease-in-out infinite;
+}
+
+
 
 /* Hero text is above the fold — show immediately */
 .hero .fade-up {

@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/CSS/Inicio.css" />
-  <link rel="stylesheet" href="/CSS/productos.css" />
+  <link rel="stylesheet" href="/css/Inicio.css" />
+  <link rel="stylesheet" href="/css/productos.css" />
   
 </head>
 <body>
@@ -101,11 +101,12 @@
                 <span class="discount-pill">{{this.descuento}}</span>
               {{/if}}
               <div class="producto-img">
-                <img src="{{this.imagen}}" alt="{{this.nombre}}" loading="lazy" width="320" height="320" onerror="this.onerror=null;this.src='/IMG/categorias/default.svg'">
+                <img src="{{this.imagen}}" alt="{{this.nombre}}" loading="lazy" width="320" height="320" onerror="this.onerror=null;this.src='/img/categorias/default.svg'">
               </div>
               <div class="producto-cat">{{this.categoria}}</div>
               <h3>{{this.nombre}}</h3>
               <p class="desc">{{this.descripcion}}</p>
+              <p class="desc muted">Disponibles: {{this.stock}}</p>
               <div class="row">
                 <div>
                   <span class="price price-accent">${{this.precio}}</span>
@@ -113,7 +114,9 @@
                     <span class="price-old">${{this.precio_anterior}}</span>
                   {{/if}}
                 </div>
-                <button class="btn btn-primary btn-sm" onclick="addToCart('{{this.nombre}}', {{this.precio}})">
+                <button class="btn btn-primary btn-sm"
+                  data-id="{{this.id}}" data-name="{{this.nombre}}" data-price="{{this.precio}}" data-stock="{{this.stock}}"
+                  onclick="addToCartFromBtn(this)">
                   Comprar
                 </button>
               </div>
@@ -155,6 +158,6 @@
 
 <div class="toast-container" id="toast-container"></div>
 
-<script src="/JS/Inicio.js"></script>
+<script src="/js/Inicio.js"></script>
 </body>
 

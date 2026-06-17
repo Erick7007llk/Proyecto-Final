@@ -1,0 +1,28 @@
+
+├──admin/                 # Panel de administración frontend (CSS/JS)
+├── node_modules/          # Dependencias de npm
+├── public/                # Archivos estáticos
+│   ├── css/               # Hojas de estilo
+│   ├── fonts/             # Fuentes web
+│   ├── img/               # Imágenes
+│   └── js/                # Scripts del cliente
+├── routes/                # Rutas Express (API y web)
+├── services/              # Lógica de negocio y base de datos
+├── views/                 # Vistas Handlebars (.hbs)
+│   ├── layouts/           # Plantillas base
+│   ├── partials/          # Componentes reutilizables
+│   ├── admin.hbs
+│   ├── inicio.hbs
+│   ├── login.hbs
+│   ├── productos.hbs
+│   └── sucursales.hbs
+├── .env                   # Variables de entorno (no subir a git)
+├── .env.example           # Plantilla de variables de entorno
+├── .gitignore             # Archivos ignorados por git
+├── db.js                  # Configuración de base de datos
+├── Estructura             # Este archivo
+├── index.js               # Punto de entrada de la aplicación
+├── package-lock.json      # Versiones exactas de dependencias
+├──  package.json           # Configuración de npm
+├── proyecto_rafa4.sql     # Backup de la base de datos
+└── README.md              # Documentación del proyecto

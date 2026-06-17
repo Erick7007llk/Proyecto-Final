@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,23 +8,26 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/CSS/Inicio.css">
-  <link rel="stylesheet" href="/CSS/sucursales.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/css/Inicio.css">
+  <link rel="stylesheet" href="/css/sucursales.css">
+
 <body>
 
-<header class="navbar">
-  <div class="container nav-inner">
-    <a href="/" class="logo">
-      <div class="logo-icon">+</div>
-      <div class="logo-text"><strong>GBC</strong><small>Farmacia</small></div>
-    </a>
-    {{> nav activeSucursales=true}}
-    <div class="nav-actions">
-      <button class="cart-btn" onclick="openDrawer()" aria-label="Abrir carrito">
-        🛒<span class="cart-badge"></span>
-      </button>
-      {{#if loggedIn}}
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="logo">
+        <div class="logo-icon">+</div>
+        <div class="logo-text"><strong>GBC</strong><small>Farmacia</small></div>
+      </a>
+      {{> nav activeSucursales=true}}
+      <div class="nav-actions">
+        <button class="cart-btn" onclick="openDrawer()" aria-label="Abrir carrito">
+          🛒<span class="cart-badge"></span>
+        </button>
+        {{#if loggedIn}}
         <div class="user-menu">
           <button class="user-btn" onclick="toggleUserMenu()" id="user-menu-btn">
             <span class="user-avatar">{{usuario.nombre.[0]}}</span>
@@ -38,65 +42,67 @@
             <a href="/logout" class="dropdown-item">🚪 Cerrar sesión</a>
           </div>
         </div>
-      {{else}}
+        {{else}}
         <a href="/login" class="btn btn-hero btn-sm" id="cta-login">Iniciar sesión</a>
-      {{/if}}
-      <button class="menu-btn" onclick="toggleMenu()" aria-label="Menú">☰</button>
+        {{/if}}
+        <button class="menu-btn" onclick="toggleMenu()" aria-label="Menú">☰</button>
+      </div>
     </div>
-  </div>
-  <div class="mobile-menu" id="mobile-menu">
-    <div class="container">
-      {{> nav-mobile}}
-      {{#if loggedIn}}
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="container">
+        {{> nav-mobile}}
+        {{#if loggedIn}}
         <a href="/logout" class="btn btn-outline">🚪 Cerrar sesión</a>
-      {{else}}
+        {{else}}
         <a href="/login" class="btn btn-hero">Iniciar sesión</a>
-      {{/if}}
-    </div>
-  </div>
-</header>
-
-<main class="page-content">
-  <section id="sucursales" class="section-soft">
-    <div class="container">
-      <div class="section-head">
-        <span class="tag tag-primary">📍 Encuéntranos</span>
-        <h2>Nuestras Sucursales</h2>
-        <p>GBC cuenta con más de 160 sucursales en todo el país. Aquí encontrarás algunas de las más conocidas.</p>
-        <p class="section-sub" style="margin-top:12px">
-          <a href="https://farmaciamedicargbc.com/sucursales/" target="_blank" rel="noopener noreferrer">Ver listado completo en farmaciamedicargbc.com →</a>
-        </p>
+        {{/if}}
       </div>
-      <div class="grid grid-4" id="sucursales-grid">
-        {{#each sucursales}}
-        <div class="card sucursal-card">
-          <div class="icon-circle accent">📍</div>
-          <h3>{{this.nombre}}</h3>
-          <p class="desc">{{this.direccion}}</p>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <section id="sucursales" class="section-soft">
+      <div class="container">
+        <div class="section-head">
+          <span class="tag tag-primary">📍 Encuéntranos</span>
+          <h2>Nuestras Sucursales</h2>
+          <p>GBC cuenta con más de 160 sucursales en todo el país. Aquí encontrarás algunas de las más conocidas.</p>
+          <p class="section-sub" style="margin-top:12px">
+            <a href="https://farmaciamedicargbc.com/sucursales/" target="_blank" rel="noopener noreferrer">Ver listado
+              completo en farmaciamedicargbc.com →</a>
+          </p>
         </div>
-        {{/each}}
+        <div class="grid grid-4" id="sucursales-grid">
+          {{#each sucursales}}
+          <div class="card sucursal-card">
+            <div class="icon-circle accent">📍</div>
+            <h3>{{this.nombre}}</h3>
+            <p class="desc">{{this.direccion}}</p>
+          </div>
+          {{/each}}
+        </div>
       </div>
+    </section>
+  </main>
+
+  {{> footer}}
+
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer" aria-label="Carrito">
+    <div class="drawer-head">
+      <h3>🛒 Tu carrito (<span id="drawer-count">0</span>)</h3>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Cerrar">✕</button>
     </div>
-  </section>
-</main>
+    <div class="drawer-body" id="drawer-body"></div>
+    <div class="drawer-foot hidden" id="drawer-foot">
+      <div class="total-row"><span>Total</span><span id="drawer-total">$0</span></div>
+      <button class="btn btn-hero btn-block" onclick="checkout()">Confirmar pedido ➤</button>
+      <button class="btn btn-outline btn-block mt-8" onclick="clearCart()">Vaciar carrito</button>
+    </div>
+  </aside>
 
-{{> footer}}
-
-<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-<aside class="drawer" id="drawer" aria-label="Carrito">
-  <div class="drawer-head">
-    <h3>🛒 Tu carrito (<span id="drawer-count">0</span>)</h3>
-    <button class="drawer-close" onclick="closeDrawer()" aria-label="Cerrar">✕</button>
-  </div>
-  <div class="drawer-body" id="drawer-body"></div>
-  <div class="drawer-foot hidden" id="drawer-foot">
-    <div class="total-row"><span>Total</span><span id="drawer-total">$0</span></div>
-    <button class="btn btn-hero btn-block" onclick="checkout()">Confirmar pedido ➤</button>
-    <button class="btn btn-outline btn-block mt-8" onclick="clearCart()">Vaciar carrito</button>
-  </div>
-</aside>
-
-<div class="toast-container" id="toast-container"></div>
-<script src="/JS/Inicio.js"></script>
+  <div class="toast-container" id="toast-container"></div>
+  <script src="/js/Inicio.js"></script>
 </body>
+
 </html>

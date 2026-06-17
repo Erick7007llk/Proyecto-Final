@@ -19,12 +19,13 @@
       formTitle: 'Nuevo proveedor',
       formSubtitle: 'Completa los datos para registrarlo.',
       fields: [
-        { name: 'codigo', label: 'Código', placeholder: 'P-001' },
-        { name: 'nombre', label: 'Nombre del Proveedor', placeholder: 'Adrian de Jesus' },
-        { name: 'direccion', label: 'Dirección', placeholder: 'Villa Jagua, Calle 5G' },
-        { name: 'telefono', label: 'Número Telefónico', placeholder: '829-420-6043' },
-        { name: 'correo', label: 'Correo Electrónico', placeholder: 'proveedor@gbc.com', type: 'email' },
-        { name: 'provincia', label: 'Provincia', placeholder: 'Azua' },
+        { name: 'codigo', label: 'Código' },
+        { name: 'rnc', label: 'RNC' },
+        { name: 'nombre', label: 'Nombre del Proveedor' },
+        { name: 'direccion', label: 'Dirección' },
+        { name: 'telefono', label: 'Número Telefónico' },
+        { name: 'correo', label: 'Correo Electrónico', type: 'email' },
+        { name: 'provincia', label: 'Provincia' },
         { name: 'estado', label: 'Estado del Proveedor', type: 'radio', options: ['Activo', 'Inactivo'], default: 'Activo' }
       ],
       columns: [
@@ -58,16 +59,16 @@
       formTitle: 'Nuevo empleado',
       formSubtitle: 'Registra un nuevo miembro del equipo.',
       fields: [
-        { name: 'codigo', label: 'Código', placeholder: 'E-001' },
-        { name: 'nombre', label: 'Nombre', placeholder: 'Adrian' },
-        { name: 'apellidos', label: 'Apellidos', placeholder: 'de Jesus Vidal' },
-        { name: 'cedula', label: 'Cédula', placeholder: '001-0000000-0' },
-        { name: 'direccion', label: 'Dirección', placeholder: 'Villa Juana, Calle 5G' },
-        { name: 'telefono', label: 'Teléfono', placeholder: '829-428-6843' },
-        { name: 'cargo', label: 'Cargo', placeholder: 'Auxiliar' },
-        { name: 'horario', label: 'Horario', placeholder: '7:00am - 12:00pm' },
-        { name: 'sueldo', label: 'Sueldo', placeholder: '5980', type: 'number' },
-        { name: 'provincia', label: 'Provincia', placeholder: 'Santo Domingo' },
+        { name: 'codigo', label: 'Código' },
+        { name: 'nombre', label: 'Nombre' },
+        { name: 'apellidos', label: 'Apellidos' },
+        { name: 'cedula', label: 'Cédula' },
+        { name: 'direccion', label: 'Dirección' },
+        { name: 'telefono', label: 'Teléfono' },
+        { name: 'cargo', label: 'Cargo' },
+        { name: 'horario', label: 'Horario' },
+        { name: 'sueldo', label: 'Sueldo', type: 'number' },
+        { name: 'provincia', label: 'Provincia' },
         { name: 'estado', label: 'Estado', type: 'radio', options: ['Activo', 'Inactivo'], default: 'Activo' }
       ],
       columns: [
@@ -110,15 +111,16 @@
       formTitle: 'Nuevo producto',
       formSubtitle: 'Agrega un producto al inventario.',
       fields: [
-        { name: 'nombre', label: 'Nombre del producto', placeholder: 'Paracetamol' },
-        { name: 'tipo', label: 'Tipo de producto', placeholder: 'Analgésico' },
-        { name: 'precio', label: 'Precio (RD$)', placeholder: '50.00', type: 'number', step: '0.01' },
-        { name: 'cantidad', label: 'Cantidad', placeholder: '100', type: 'number' },
-        { name: 'lote', label: 'Lote', placeholder: 'L20250415' },
+        { name: 'codigo', label: 'Código' },
+        { name: 'nombre', label: 'Nombre del producto' },
+        { name: 'tipo', label: 'Categoría' },
+        { name: 'precio', label: 'Precio (RD$)', type: 'number', step: '0.01' },
+        { name: 'cantidad', label: 'Cantidad', type: 'number' },
+        { name: 'lote', label: 'Lote' },
         { name: 'vence', label: 'Fecha Vencimiento', type: 'date' },
-        { name: 'medicamento', label: 'Tipo Medicamento', placeholder: 'Genérico' },
-        { name: 'concentracion', label: 'Concentración', placeholder: '500 mg' },
-        { name: 'presentacion', label: 'Presentación', placeholder: 'Tabletas' }
+        { name: 'medicamento', label: 'Tipo Medicamento' },
+        { name: 'concentracion', label: 'Concentración' },
+        { name: 'presentacion', label: 'Presentación' }
       ],
       columns: [
         { key: 'nombre', label: 'Producto' },
@@ -153,12 +155,13 @@
       formTitle: 'Nuevo cliente',
       formSubtitle: 'Registra un nuevo cliente.',
       fields: [
-        { name: 'codigo', label: 'Código', placeholder: 'C-001' },
-        { name: 'nombre', label: 'Nombre', placeholder: 'Juan' },
-        { name: 'apellidos', label: 'Apellidos', placeholder: 'Pérez' },
-        { name: 'seguro', label: 'Seguro Médico', placeholder: 'Senasa' },
+        { name: 'codigo', label: 'Código' },
+        { name: 'nombre', label: 'Nombre' },
+        { name: 'apellidos', label: 'Apellidos' },
+        { name: 'seguro', label: 'Seguro Médico' },
         { name: 'sexo', label: 'Sexo', type: 'select', options: ['M', 'F'] },
-        { name: 'telefono', label: 'Teléfono', placeholder: '809-555-2001' },
+        { name: 'telefono', label: 'Teléfono' },
+        { name: 'provincia', label: 'Provincia' },
         { name: 'estado', label: 'Estado del Cliente', type: 'radio', options: ['Activo', 'Inactivo'], default: 'Activo' }
       ],
       columns: [
@@ -168,6 +171,7 @@
         { key: 'seguro', label: 'Seguro Médico' },
         { key: 'sexo', label: 'Sexo' },
         { key: 'telefono', label: 'Teléfono' },
+        { key: 'provincia', label: 'Provincia' },
         { key: 'estado', label: 'Estado', type: 'badge' }
       ],
       searchPlaceholder: 'Buscar cliente...',
